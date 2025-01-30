@@ -15,6 +15,5 @@ pose.py
 feature_extraction.py
 layout.txt
 gaussian.py
-masked_tracking.py
 output
 smooth_tracking.py
