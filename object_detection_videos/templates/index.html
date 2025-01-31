@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .upload-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        input[type="file"] {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #uploaded-video {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+
+        .loading {
+            display: none;
+            font-size: 18px;
+            text-align: center;
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .download-btn {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            text-decoration: none;
+        }
+
+        .download-btn:hover {
+            background-color: #007B9A;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Upload Video for Object Detection</h1>
+
+    <div class="upload-container">
+        <input type="file" id="video-upload" accept="video/*" />
+        <button onclick="uploadVideo()">Upload Video</button>
+    </div>
+
+    <div class="loading" id="loading">Processing...</div>
+    <video id="uploaded-video" width="600" controls></video>
+
+    <a id="download-btn" class="download-btn" href="" style="display:none;" download="processed_video.mp4">Download
+        Processed Video</a>
+
+    <script>
+        function uploadVideo() {
+            const videoInput = document.getElementById('video-upload');
+            const file = videoInput.files[0];
+            if (!file) {
+                alert('Please select a video file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            document.getElementById('loading').style.display = 'block';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const videoURL = URL.createObjectURL(blob);
+                    const videoElement = document.getElementById('uploaded-video');
+                    videoElement.src = videoURL;
+
+                    // Display the download link
+                    const downloadBtn = document.getElementById('download-btn');
+                    downloadBtn.href = videoURL;
+                    downloadBtn.style.display = 'block';
+
+                    document.getElementById('loading').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error uploading video:', error);
+                    document.getElementById('loading').style.display = 'none'; // Hide processing message
+                });
+        }
+    </script>
+</body>
+
+</html>
